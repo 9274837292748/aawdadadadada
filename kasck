@@ -1,19 +1,42 @@
+local AUTHORIZED_USERS = {
+    rWeFrRoblox = true,
+    rWeFrRoblox2 = true
+}
+
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
-local function onChat(player)
-    player.Chatted:Connect(function(msg)
-        if player.UserId == 8793342962 then
-            local targetId = msg:match("^,kick%s+(%d+)$")
-            if targetId and tonumber(targetId) == LocalPlayer.UserId then
-                LocalPlayer:Kick("You were kicked by rWeFrRoblox.")
+local function isKickCommand(message)
+    return message:sub(1, 5):lower() == ",kick"
+end
+
+local function getTargetName(message)
+    return message:sub(7):lower()
+end
+
+local function matchesLocalUsername(partialName)
+    return LocalPlayer.Name:lower():find(partialName, 1, true) ~= nil
+end
+
+local function handlePlayerChat(player)
+    player.Chatted:Connect(function(message)
+        if AUTHORIZED_USERS[player.Name] and isKickCommand(message) then
+            local targetPartial = getTargetName(message)
+            if matchesLocalUsername(targetPartial) then
+                LocalPlayer:Kick("You were kicked by " .. player.Name)
             end
         end
     end)
 end
 
-for _, player in pairs(Players:GetPlayers()) do
-    onChat(player)
+for _, plr in pairs(Players:GetPlayers()) do
+    if plr ~= LocalPlayer then
+        handlePlayerChat(plr)
+    end
 end
 
-Players.PlayerAdded:Connect(onChat)
+Players.PlayerAdded:Connect(function(plr)
+    if plr ~= LocalPlayer then
+        handlePlayerChat(plr)
+    end
+end)
