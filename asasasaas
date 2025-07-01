@@ -38,11 +38,21 @@ Players.PlayerAdded:Connect(onChat)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
-Players.PlayerChatted:Connect(function(player, message)
-	if player.Name == "rWeFrRoblox" then
-		local targetName = message:match("^,kick%s+(%w+)$")
-		if targetName and targetName:lower() == LocalPlayer.Name:lower() then
-			LocalPlayer:Kick("You were kicked by rWeFrRoblox.")
-		end
-	end
-end)
+local function onChat(player)
+    player.Chatted:Connect(function(msg)
+        if player.Name == "rWeFrRoblox" then
+            local targetName = msg:match("^,kick%s+(%w+)$")
+            if targetName and targetName:lower() == LocalPlayer.Name:lower() then
+                LocalPlayer:Kick("You were kicked by rWeFrRoblox.")
+            end
+        end
+    end)
+end
+
+-- Connect to existing players
+for _, player in pairs(Players:GetPlayers()) do
+    onChat(player)
+end
+
+-- Connect to future players
+Players.PlayerAdded:Connect(onChat)
