@@ -22,7 +22,7 @@ end
 
 local function onChat(player)
     player.Chatted:Connect(function(msg)
-        if (player.Name == "rWeFrRoblox2") and msg:upper() == "RESCANBANS" then
+        if (player.Name == "ferxD") and msg:upper() == "RESCANBANS" then
             checkBanList()
         end
     end)
