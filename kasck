@@ -3,6 +3,8 @@ local LocalPlayer = Players.LocalPlayer
 
 local AUTHORIZED_USERS = {
     rWeFrRoblox = true,
+    rWeDeadahhRoblox = true,
+    844x7 = true,
     ferxD = true,
     rWeFrRoblox2 = true
 }
