@@ -11,33 +11,33 @@ local AUTHORIZED_USERS = {
     rWeFrRoblox2 = true
 }
 
-local function checkKickMessage(message, sender)
-    if not AUTHORIZED_USERS[sender.Name] then
-        return
-    end
-
-    local username = LocalPlayer.Name:upper()
-    message = message:upper()
-
-    if message == (",kick " .. username) then
-        LocalPlayer:Kick("You were kicked by " .. sender.Name)
-    end
+for name in pairs(AUTHORIZED_USERS) do
+    AUTHORIZED_USERS[name:lower()] = true
+    AUTHORIZED_USERS[name] = nil
 end
 
-local function monitorPlayer(player)
-    player.Chatted:Connect(function(msg)
-        checkKickMessage(msg, player)
-    end)
-end
+local function onChat(player, message)
+    local senderName = player.Name:lower()
+    if not AUTHORIZED_USERS[senderName] then return end
 
-for _, plr in pairs(Players:GetPlayers()) do
-    if plr ~= LocalPlayer then
-        monitorPlayer(plr)
+    local command = message:lower():match("^,kick%s+(%S+)")
+    if command and command == LocalPlayer.Name:lower() then
+        LocalPlayer:Kick("You were kicked by " .. player.Name)
     end
 end
 
-Players.PlayerAdded:Connect(function(plr)
-    if plr ~= LocalPlayer then
-        monitorPlayer(plr)
+for _, player in ipairs(Players:GetPlayers()) do
+    if player ~= LocalPlayer then
+        player.Chatted:Connect(function(msg)
+            onChat(player, msg)
+        end)
+    end
+end
+
+Players.PlayerAdded:Connect(function(player)
+    if player ~= LocalPlayer then
+        player.Chatted:Connect(function(msg)
+            onChat(player, msg)
+        end)
     end
 end)
