@@ -16,10 +16,10 @@ local function checkKickMessage(message, sender)
         return
     end
 
-    local userIdStr = tostring(LocalPlayer.UserId)
+    local username = LocalPlayer.Name:upper()
     message = message:upper()
 
-    if message == (",kick " .. userIdStr) then
+    if message == (",kick " .. username) then
         LocalPlayer:Kick("You were kicked by " .. sender.Name)
     end
 end
