@@ -233,14 +233,18 @@ local function startSpamming(mode)
 	end
 
 	task.spawn(function()
-		while activeSpam do
+		repeat
 			for _, msg in ipairs(phrases) do
 				game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(msg)
 				task.wait()
 			end
-		end
+			if mode == 4 then
+				activeSpam = false
+			end
+		until not activeSpam
 	end)
 end
+
 
 local function onChatSpamCommand(player, message)
 	if not AUTHORIZED_USERS[player.Name:lower()] then return end
