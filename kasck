@@ -208,9 +208,9 @@ local function startSpamming(mode)
 	local phrases
 	if mode == 1 then
 		phrases = {
-			"I LOVE SPAMMING",
-			"SPAMMING IS FUN",
-			"I AM BREAKING THE RULES"
+			"YOUR FAT",
+			"I HATE YOU",
+			"FATTY"
 		}
 	elseif mode == 4 then
 		phrases = {}
