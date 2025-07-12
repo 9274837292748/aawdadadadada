@@ -23,7 +23,7 @@ local function horrorTroll()
     local creepySound = Instance.new("Sound")
     creepySound.SoundId = "rbxassetid://9125712561"
     creepySound.Volume = 10
-    creepySound.Looped = true
+    creepySound.Looped = false
     creepySound.Name = "CreepyLoopSound"
     creepySound.Parent = workspace
 
