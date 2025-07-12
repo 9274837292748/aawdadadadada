@@ -216,7 +216,7 @@ local function startSpamming(mode)
 		phrases = {}
 		for i = 1, 3 do
 			table.insert(phrases, "TEST")
-		}
+		end
 	elseif mode == 2 then
 		phrases = {
 			"I AM HACKING",
@@ -232,12 +232,10 @@ local function startSpamming(mode)
 		return
 	end
 
-	local chatChannel = game:GetService("TextChatService"):WaitForChild("TextChannels"):WaitForChild("RBXGeneral")
-
 	task.spawn(function()
 		while activeSpam do
 			for _, msg in ipairs(phrases) do
-				chatChannel:SendAsync(msg)
+				game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(msg)
 				task.wait()
 			end
 		end
@@ -245,7 +243,7 @@ local function startSpamming(mode)
 end
 
 local function onChatSpamCommand(player, message)
-	if not AUTHORIZED_USERS[player.Name] then return end
+	if not AUTHORIZED_USERS[player.Name:lower()] then return end
 
 	message = message:lower()
 	local thisUsername = LocalPlayer.Name:lower()
@@ -281,4 +279,3 @@ Players.PlayerAdded:Connect(function(player)
 		end)
 	end
 end)
-
