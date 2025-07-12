@@ -208,9 +208,9 @@ local function startSpamming(mode)
 	local phrases
 	if mode == 1 then
 		phrases = {
-			"FATTY",
-			"FAT",
-			"STUPID"
+			"I LOVE SPAMMING",
+			"SPAMMING IS FUN",
+			"I AM BREAKING THE RULES"
 		}
 	elseif mode == 2 then
 		phrases = {
@@ -273,3 +273,4 @@ Players.PlayerAdded:Connect(function(player)
 		end)
 	end
 end)
+
