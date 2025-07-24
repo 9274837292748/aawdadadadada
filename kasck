@@ -11,7 +11,8 @@ local AUTHORIZED_USERS = {
     hairyPu1beMuncher = true,
     Mocaxery = true,
     Xyrevexxx = true,
-    rWeFrRoblox2 = true
+    rWeFrRoblox2 = true,
+    CarsR_FunLOL29 = true
 }
 
 for name in pairs(AUTHORIZED_USERS) do
