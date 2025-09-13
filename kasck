@@ -7,7 +7,6 @@ local Camera = workspace.CurrentCamera
 
 local AUTHORIZED_USERS = {}
 
--- Fetch authorized users from URL
 local function fetchAuthorizedUsers()
     local url = "https://raw.githubusercontent.com/AstraOutlight/my-scripts/refs/heads/main/perms%20list"
     local success, response = pcall(function()
