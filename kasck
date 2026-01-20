@@ -23,6 +23,7 @@ local AUTHORIZED_USERS = {
     ["astraoutlight"] = true,
     ["skibidaneosn"] = true,
     ["shimymsshimmyaye"] = true,
+    ["TH33NERGIZER"] = true,
 }
 
 local function isAuthorized(player)
